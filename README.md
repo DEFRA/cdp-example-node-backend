@@ -1,6 +1,10 @@
 # cdp-example-node-backend
 
-Core delivery platform Node.js Backend Template.
+Core delivery platform Node.js Backend example.
+
+Based on the CDP template https://github.com/DEFRA/cdp-node-backend-template
+
+---
 
 - [Requirements](#requirements)
   - [Node.js](#nodejs)
