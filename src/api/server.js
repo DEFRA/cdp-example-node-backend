@@ -10,7 +10,6 @@ import { populateDb } from '~/src/helpers/db/populate-db'
 import { secureContext } from '~/src/helpers/secure-context'
 
 const isProduction = config.get('isProduction')
-const appPathPrefix = config.get('appPathPrefix')
 
 async function createServer() {
   const server = hapi.server({
@@ -49,13 +48,7 @@ async function createServer() {
 
   await server.register({ plugin: mongoPlugin, options: {} })
 
-  if (!appPathPrefix || appPathPrefix === '/') {
-    await server.register(router)
-  } else {
-    await server.register(router, {
-      routes: { prefix: appPathPrefix }
-    })
-  }
+  await server.register(router)
 
   await server.register(populateDb)
 
