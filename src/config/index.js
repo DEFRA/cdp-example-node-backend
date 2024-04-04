@@ -1,5 +1,5 @@
+import path from 'node:path'
 import convict from 'convict'
-import path from 'path'
 
 const config = convict({
   env: {
