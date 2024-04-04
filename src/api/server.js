@@ -45,7 +45,16 @@ async function createServer() {
     await server.register(secureContext)
   }
 
-  await server.register({ plugin: mongoPlugin, options: {} })
+  await server.register({
+    plugin: mongoPlugin,
+    options: {
+      mongoUrl: config.get('mongoUri'),
+      databaseName: config.get('mongoDatabase'),
+      retryWrites: false,
+      readPreference: 'secondary',
+      ...(server.secureContext && { secureContext: server.secureContext })
+    }
+  })
 
   await server.register(router)
 
