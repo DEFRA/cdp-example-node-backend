@@ -2,6 +2,7 @@ import { MongoClient } from 'mongodb'
 
 async function createIndexes(db) {
   await db.collection('animals').createIndex({ animalId: 1 })
+  await db.collection('plants').createIndex({ plantId: 1 })
 }
 
 const mongoPlugin = {
