@@ -1,9 +1,6 @@
-import { ObjectId } from 'mongodb'
-
 async function createPlant(db, plant) {
   const result = await db.collection('plants').insertOne({
     ...plant,
-    plantId: new ObjectId(),
     createdAt: new Date(),
     updatedAt: new Date()
   })
