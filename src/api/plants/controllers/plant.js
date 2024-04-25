@@ -8,7 +8,7 @@ const plantController = {
   options: {
     validate: {
       params: Joi.object({
-        plantId: Joi.string().required()
+        plantId: Joi.string().uuid().required()
       })
     }
   },

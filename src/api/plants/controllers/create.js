@@ -4,15 +4,16 @@ import { createPlant } from '~/src/api/plants/helpers/create-plant'
 
 const file = Joi.object({
   filename: Joi.string().required(),
-  uploadId: Joi.string().required(),
-  fileId: Joi.string().required()
+  uploadId: Joi.string().uuid().required(),
+  fileId: Joi.string().uuid().required(),
+  fileUrl: Joi.string().required()
 })
 
 const createPlantController = {
   options: {
     validate: {
       payload: Joi.object({
-        plantId: Joi.string().required(),
+        plantId: Joi.string().uuid().required(),
         name: Joi.string().required(),
         files: Joi.array().items(file)
       })

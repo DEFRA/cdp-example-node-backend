@@ -3,6 +3,13 @@ import Joi from 'joi'
 import { createAnimal } from '~/src/api/animals/helpers/create-animal'
 import { counter } from '~/src/helpers/metrics/metrics'
 
+const file = Joi.object({
+  filename: Joi.string().required(),
+  uploadId: Joi.string().uuid().required(),
+  fileId: Joi.string().uuid().required(),
+  fileUrl: Joi.string().required()
+})
+
 const createAnimalController = {
   options: {
     validate: {
@@ -10,7 +17,7 @@ const createAnimalController = {
         name: Joi.string().required(),
         kind: Joi.string().required(),
         phoneNumber: Joi.string().required(),
-        fileUrl: Joi.string().required()
+        file
       })
     }
   },
