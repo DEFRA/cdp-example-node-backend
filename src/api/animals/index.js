@@ -6,7 +6,7 @@ import {
 
 const animals = {
   plugin: {
-    name: 'entities',
+    name: 'animals',
     register: async (server) => {
       server.route([
         {
