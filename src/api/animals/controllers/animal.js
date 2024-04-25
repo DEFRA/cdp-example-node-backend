@@ -8,7 +8,7 @@ const animalController = {
   options: {
     validate: {
       params: Joi.object({
-        animalId: Joi.string().required()
+        animalId: Joi.string().hex().length(24).required()
       })
     }
   },
