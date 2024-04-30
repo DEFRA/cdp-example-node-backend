@@ -18,7 +18,12 @@ const createTrackingController = {
   handler: async (request, h) => {
     const birdId = request.params.birdId
     const spotter = request.payload.spotter
+
     const tracking = await createTracking(request.db, birdId, spotter)
+    console.log(
+      { birdId, spotter, tracking },
+      'Created a tracking for birdId and spotter'
+    )
 
     if (isNull(tracking)) {
       return Boom.boomify(Boom.notFound())

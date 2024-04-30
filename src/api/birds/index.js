@@ -1,15 +1,21 @@
 import {
+  callbackTrackingController,
   createTrackingController,
   findTrackingController,
   findTrackingsController,
   updateTrackingStatusUrlController
 } from '~/src/api/birds/controllers'
 
-const plants = {
+const birds = {
   plugin: {
-    name: 'plants',
+    name: 'birds',
     register: async (server) => {
       server.route([
+        {
+          method: 'POST',
+          path: '/birds/{birdId}/tracking/{trackingId}/callback',
+          ...callbackTrackingController
+        },
         {
           method: 'POST',
           path: '/birds/{birdId}/tracking/{trackingId}/status-url',
@@ -35,4 +41,4 @@ const plants = {
   }
 }
 
-export { plants }
+export { birds }

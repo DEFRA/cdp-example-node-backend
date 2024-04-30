@@ -2,6 +2,7 @@ import Joi from 'joi'
 import Boom from '@hapi/boom'
 import { isNull } from 'lodash'
 
+import { findTracking } from '~/src/api/birds/helpers/find-tracking'
 import { updateTrackingStatusUrl } from '~/src/api/birds/helpers/update-tracking'
 
 const updateTrackingStatusUrlController = {
@@ -20,7 +21,7 @@ const updateTrackingStatusUrlController = {
     const birdId = request.params.birdId
     const trackingId = request.params.trackingId
     const statusUrl = request.payload.statusUrl
-    const tracking = await findTracking(request.db, trackingId)
+    const tracking = await findTracking(request.db, birdId, trackingId)
 
     if (isNull(tracking)) {
       return Boom.boomify(Boom.notFound())

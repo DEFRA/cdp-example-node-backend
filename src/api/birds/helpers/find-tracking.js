@@ -1,10 +1,7 @@
-async function findTracking(db, trackingId) {
+async function findTracking(db, birdId, trackingId) {
   return await db
     .collection('bird-trackings')
-    .findOne(
-      { trackingId: new ObjectId(trackingId) },
-      { projection: { _id: 0 } }
-    )
+    .findOne({ birdId, trackingId }, { projection: { _id: 0 } })
 }
 
 export { findTracking }
