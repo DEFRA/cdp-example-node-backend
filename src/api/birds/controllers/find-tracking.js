@@ -1,8 +1,9 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
-import { isNull } from 'lodash'
+import { isNull, update } from 'lodash'
 
 import { findTracking } from '~/src/api/birds/helpers/find-tracking'
+import { simulateProcessing } from '~/src/api/birds/helpers/simulate-processing'
 
 const findTrackingController = {
   options: {
@@ -17,15 +18,17 @@ const findTrackingController = {
     const birdId = request.params.birdId
     const trackingId = request.params.trackingId
 
-    console.log({ birdId, trackingId }, 'Finding tracking')
-
     const tracking = await findTracking(request.db, birdId, trackingId)
+
+    console.log({ birdId, trackingId, tracking }, 'Found tracking?')
 
     if (isNull(tracking)) {
       return Boom.boomify(Boom.notFound())
     }
 
-    return h.response({ message: 'success', tracking }).code(200)
+    simulateProcessing(request, tracking)
+
+    return h.response({ tracking }).code(200)
   }
 }
 
