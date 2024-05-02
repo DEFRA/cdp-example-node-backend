@@ -8,6 +8,7 @@ async function createTracking(db, birdId, spotter) {
     spotter,
     birdId,
     trackingId,
+    trackingStatus: 'UploadPending',
     createdAt: new Date(),
     updatedAt: new Date()
   })
