@@ -1,13 +1,11 @@
-import * as crypto from 'node:crypto'
-import { ObjectId } from 'mongodb'
+import { ObjectId, UUID } from 'mongodb'
 
 async function createTracking(db, birdId, spotter) {
-  const trackingId = crypto.randomUUID()
   const result = await db.collection('bird-trackings').insertOne({
     referenceId: new ObjectId(),
     spotter,
     birdId,
-    trackingId,
+    trackingId: UUID(),
     trackingStatus: 'UploadPending',
     createdAt: new Date(),
     updatedAt: new Date()

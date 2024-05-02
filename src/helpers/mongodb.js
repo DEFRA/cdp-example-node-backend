@@ -9,6 +9,9 @@ async function createPlantIndexes(db) {
 async function createCreaturesIndexes(db) {
   await db.collection('creatures').createIndex({ creatureId: 1 })
 }
+async function createBirdTrackingIndexes(db) {
+  await db.collection('bird-trackings').createIndex({ referenceId: 1 })
+}
 
 const mongoPlugin = {
   name: 'mongodb',
@@ -27,6 +30,7 @@ const mongoPlugin = {
     await createAnimalsIndexes(db)
     await createPlantIndexes(db)
     await createCreaturesIndexes(db)
+    await createBirdTrackingIndexes(db)
 
     server.logger.info(`mongodb connected to ${databaseName}`)
 
