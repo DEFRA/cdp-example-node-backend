@@ -2,7 +2,7 @@ import { updateTrackingStatus } from '~/src/api/birds/helpers/update-tracking'
 
 async function simulateProcessing(request, tracking) {
   if (!tracking.trackingStatus) {
-    console.log({ tracking }, 'No status' + tracking.trackingStatus)
+    request.logger.warn({ tracking }, 'No status')
     return
   }
 
@@ -10,32 +10,35 @@ async function simulateProcessing(request, tracking) {
     tracking.trackingStatus === 'Ready' ||
     tracking.trackingStatus === 'Rejected'
   ) {
-    console.log({ tracking }, 'Simulated processing already complete')
+    request.logger.warn({ tracking }, 'Simulated processing already complete')
     return
   }
 
   if (tracking.trackingStatus === 'ReadyForProcessing') {
-    console.log({ tracking }, 'Simulating processing')
+    request.logger.debug({ tracking }, 'Simulating processing')
     await setTrackingProcessing(request.db, tracking.trackingId)
     return
   }
 
   if (tracking.trackingStatus !== 'Processing') {
-    console.log({ tracking }, `Unknown status: ${tracking.trackingStatus}`)
+    request.logger.error(
+      { tracking },
+      `Unknown status: ${tracking.trackingStatus}`
+    )
     return
   }
 
   const dice = Math.ceil(Math.random() * 10)
   if (dice <= 6) {
-    console.log({ tracking }, `Simulated processing continues`)
+    request.logger.debug({ tracking }, `Simulated processing continues`)
   } else if (dice > 9) {
-    console.log({ tracking }, `Simulated processing failed:`)
+    request.logger.info({ tracking }, `Simulated processing failed:`)
     setTrackingRejected(request.db, tracking.trackingId)
   } else if (dice > 6) {
-    console.log({ tracking }, `Simulated processing complete`)
+    request.logger.info({ tracking }, `Simulated processing complete`)
     setTrackingReady(request.db, tracking.trackingId)
   } else {
-    console.log({ tracking }, `Unknown dice roll ${dice}`)
+    request.logger.error(`Unknown dice roll ${dice}`)
   }
 }
 

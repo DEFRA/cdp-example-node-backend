@@ -20,8 +20,8 @@ const createTrackingController = {
     const spotter = request.payload.spotter
 
     const tracking = await createTracking(request.db, birdId, spotter)
-    console.log(
-      { birdId, spotter, tracking },
+    request.logger.info(
+      { birdId, tracking },
       'Created a tracking for birdId and spotter'
     )
 

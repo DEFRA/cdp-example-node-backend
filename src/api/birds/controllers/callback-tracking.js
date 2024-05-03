@@ -31,7 +31,7 @@ const callbackTrackingController = {
     const files = payload?.files
     const fields = payload?.fields
 
-    console.log(
+    request.logger.debug(
       { birdId, trackingId, tracking, payload, files, fields },
       'Tracking callback'
     )
@@ -62,7 +62,7 @@ const callbackTrackingController = {
     } else if (uploadStatus && uploadStatus === 'rejected') {
       tracking.status = 'Rejected'
     } else {
-      console.log({ uploadStatus, s3Key, tracking }, 'Unknown status')
+      request.logger.warn({ uploadStatus, s3Key, tracking }, 'Unknown status')
       return h.response({ message: 'Unknown status' }).code(400)
     }
 
@@ -75,8 +75,8 @@ const callbackTrackingController = {
       return h.response({ message: 'error' }).code(500)
     }
 
-    console.log(
-      { tracking },
+    request.logger.info(
+      { tracking, trackingId, birdId },
       'Tracking set to ready for processing or rejected'
     )
 

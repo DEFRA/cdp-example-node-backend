@@ -9,7 +9,14 @@ const router = {
   plugin: {
     name: 'Router',
     register: async (server) => {
-      await server.register([health, animals, birds, callback, creatures, plants])
+      await server.register([
+        health,
+        animals,
+        birds,
+        callback,
+        creatures,
+        plants
+      ])
     }
   }
 }
