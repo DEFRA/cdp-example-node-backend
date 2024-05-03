@@ -1,26 +1,32 @@
 import { updateTrackingStatus } from '~/src/api/birds/helpers/update-tracking'
+import { trackingStatus } from './tracking-status'
 
 async function simulateProcessing(request, tracking) {
   if (!tracking.trackingStatus) {
     request.logger.warn({ tracking }, 'No status')
-    return
+    return tracking
   }
 
   if (
-    tracking.trackingStatus === 'Ready' ||
-    tracking.trackingStatus === 'Rejected'
+    tracking.trackingStatus === trackingStatus.ready ||
+    tracking.trackingStatus === trackingStatus.rejected
   ) {
     request.logger.warn({ tracking }, 'Simulated processing already complete')
-    return
+    return tracking
   }
 
-  if (tracking.trackingStatus === 'ReadyForProcessing') {
+  if (tracking.trackingStatus === trackingStatus.uploadpending) {
+    request.logger.debug({ tracking }, 'Not yet finished uploading')
+    return tracking
+  }
+
+  if (tracking.trackingStatus === trackingStatus.readyforprocessing) {
     request.logger.debug({ tracking }, 'Simulating processing')
     await setTrackingProcessing(request.db, tracking.trackingId)
-    return
+    return tracking
   }
 
-  if (tracking.trackingStatus !== 'Processing') {
+  if (tracking.trackingStatus !== trackingStatus.processing) {
     request.logger.error(
       { tracking },
       `Unknown status: ${tracking.trackingStatus}`
@@ -43,15 +49,15 @@ async function simulateProcessing(request, tracking) {
 }
 
 async function setTrackingReady(db, trackingId) {
-  await updateTrackingStatus(db, trackingId, 'Ready')
+  await updateTrackingStatus(db, trackingId, trackingStatus.ready)
 }
 
 async function setTrackingProcessing(db, trackingId) {
-  await updateTrackingStatus(db, trackingId, 'Processing')
+  await updateTrackingStatus(db, trackingId, trackingStatus.processing)
 }
 
 async function setTrackingRejected(db, trackingId) {
-  await updateTrackingStatus(db, trackingId, 'Rejected')
+  await updateTrackingStatus(db, trackingId, trackingStatus.rejected)
 }
 
 export { simulateProcessing }

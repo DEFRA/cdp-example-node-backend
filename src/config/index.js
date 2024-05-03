@@ -42,7 +42,7 @@ const config = convict({
   logLevel: {
     doc: 'Logging level',
     format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
-    default: 'info',
+    default: process.env.NODE_ENV !== 'production' ? 'debug' : 'info',
     env: 'LOG_LEVEL'
   },
   mongoUri: {

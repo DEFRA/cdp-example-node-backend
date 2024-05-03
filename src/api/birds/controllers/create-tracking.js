@@ -29,7 +29,7 @@ const createTrackingController = {
       return Boom.boomify(Boom.notFound())
     }
 
-    return h.response({ message: 'success', tracking }).code(200)
+    return h.response({ tracking }).code(200)
   }
 }
 

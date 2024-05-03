@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import Boom from '@hapi/boom'
 import { isNull } from 'lodash'
 
 import { findTracking } from '~/src/api/birds/helpers/find-tracking'
@@ -7,6 +6,11 @@ import {
   updateTrackingFile,
   updateTrackingStatus
 } from '~/src/api/birds/helpers/update-tracking'
+import {
+  trackingStatus,
+  uploadStatus,
+  uploadStatuses
+} from '~/src/api/birds/helpers/tracking-status'
 
 const callbackTrackingController = {
   options: {
@@ -21,34 +25,65 @@ const callbackTrackingController = {
     const birdId = request.params.birdId
     const trackingId = request.params.trackingId
 
-    const tracking = await findTracking(request.db, birdId, trackingId)
+    const { tracking } = await findTracking(request.db, birdId, trackingId)
 
     if (isNull(tracking)) {
-      return Boom.boomify(Boom.notFound())
+      request.logger.warn(
+        { birdId, trackingId },
+        'Could not find tracking for callback'
+      )
+      return h
+        .response({ message: 'Could not find tracking callback' })
+        .code(404)
     }
 
     const payload = request.payload
     const files = payload?.files
-    const fields = payload?.fields
 
     request.logger.debug(
-      { birdId, trackingId, tracking, payload, files, fields },
+      { birdId, trackingId, tracking, payload, files },
       'Tracking callback'
     )
 
-    const uploadStatus = payload?.uploadStatus
+    const uploadedStatus = payload?.uploadStatus?.toLowerCase()
     const s3Bucket = payload?.destinationBucket
     const s3Key = files?.map((file) => file.s3Key)?.[0]
     const filename = files?.map((file) => file.filename)?.[0]
     const contentType = files?.map((file) => file.contentType)?.[0]
+    const contentLength = files?.map((file) => file.contentLength)?.[0]
+    const isCsv = contentType === 'text/csv'
 
-    if (uploadStatus && s3Key && uploadStatus === 'ready') {
-      tracking.status = 'ReadyForProcessing'
+    if (!uploadedStatus || !uploadStatuses.includes(uploadedStatus)) {
+      request.logger.warn({ trackingId }, `Unknown status: ${uploadedStatus}`)
+      return h.response({ message: 'Unknown upload status' }).code(400)
+    }
+
+    if (!s3Key) {
+      request.logger.warn({ trackingId }, `No s3Key`)
+      return h.response({ message: 'No s3Key' }).code(400)
+    }
+
+    if (uploadedStatus === uploadStatus.rejected) {
+      tracking.trackingStatus = trackingStatus.rejected
+      request.logger.warn(
+        { trackingId, s3Key, tracking },
+        'File was rejected by uploader'
+      )
+    }
+
+    if (uploadedStatus === uploadStatus.ready && !isCsv) {
+      tracking.trackingStatus = trackingStatus.rejected
+      request.logger.warn({ trackingId, s3Key, tracking }, 'File is not CSV')
+    }
+
+    if (uploadedStatus === uploadStatus.ready && isCsv) {
+      tracking.trackingStatus = trackingStatus.readyforprocessing
       tracking.fileDetails = {
         s3Key,
         s3Bucket,
         filename,
-        contentType
+        contentType,
+        contentLength
       }
       const updateFileResponse = await updateTrackingFile(
         request.db,
@@ -59,17 +94,12 @@ const callbackTrackingController = {
       if (!updateFileResponse) {
         return h.response({ message: 'error' }).code(500)
       }
-    } else if (uploadStatus && uploadStatus === 'rejected') {
-      tracking.status = 'Rejected'
-    } else {
-      request.logger.warn({ uploadStatus, s3Key, tracking }, 'Unknown status')
-      return h.response({ message: 'Unknown status' }).code(400)
     }
 
     const updateStatusResponse = await updateTrackingStatus(
       request.db,
       trackingId,
-      tracking.status
+      tracking.trackingStatus
     )
     if (!updateStatusResponse) {
       return h.response({ message: 'error' }).code(500)
@@ -77,7 +107,7 @@ const callbackTrackingController = {
 
     request.logger.info(
       { tracking, trackingId, birdId },
-      'Tracking set to ready for processing or rejected'
+      'Tracking callback updated successfully'
     )
 
     return h.response().code(204)

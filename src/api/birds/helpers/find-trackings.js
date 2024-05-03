@@ -1,6 +1,6 @@
 async function findTrackings(db, birdId) {
   const cursor = db
-    .collection('bird-trackings')
+    .collection('birdtrackings')
     .find({ birdId }, { projection: { _id: 0 } })
 
   return await cursor.toArray()

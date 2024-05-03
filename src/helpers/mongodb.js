@@ -10,7 +10,7 @@ async function createCreaturesIndexes(db) {
   await db.collection('creatures').createIndex({ creatureId: 1 })
 }
 async function createBirdTrackingIndexes(db) {
-  await db.collection('bird-trackings').createIndex({ referenceId: 1 })
+  await db.collection('birdtrackings').createIndex({ trackingId: 1 })
 }
 
 const mongoPlugin = {
