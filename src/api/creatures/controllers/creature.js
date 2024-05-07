@@ -7,13 +7,12 @@ const creatureController = {
   options: {
     validate: {
       params: Joi.object({
-        creatureId: Joi.string().required()
+        creatureId: Joi.string().uuid().required()
       })
     }
   },
   handler: async (request, h) => {
     const creature = await getCreature(request.db, request.params.creatureId)
-    creature.date = creature.date.toLocaleDateString()
 
     if (isNull(creature)) {
       return Boom.boomify(Boom.notFound())
