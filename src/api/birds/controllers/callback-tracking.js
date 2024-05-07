@@ -46,11 +46,8 @@ const callbackTrackingController = {
     )
 
     const uploadedStatus = payload?.uploadStatus?.toLowerCase()
-    const s3Bucket = payload?.destinationBucket
     const s3Key = files?.map((file) => file.s3Key)?.[0]
-    const filename = files?.map((file) => file.filename)?.[0]
     const contentType = files?.map((file) => file.contentType)?.[0]
-    const contentLength = files?.map((file) => file.contentLength)?.[0]
     const isCsv = contentType === 'text/csv'
 
     if (!uploadedStatus || !uploadStatuses.includes(uploadedStatus)) {
@@ -78,6 +75,9 @@ const callbackTrackingController = {
 
     if (uploadedStatus === uploadStatus.ready && isCsv) {
       tracking.trackingStatus = trackingStatus.readyforprocessing
+      const s3Bucket = payload?.destinationBucket
+      const filename = files?.map((file) => file.filename)?.[0]
+      const contentLength = files?.map((file) => file.contentLength)?.[0]
       tracking.fileDetails = {
         s3Key,
         s3Bucket,
