@@ -17,11 +17,14 @@ const createCreatureController = {
         creatureFiles: Joi.array().items(file),
         date: Joi.date().required(),
         dream: Joi.bool().required(),
-        address: Joi.object({
-          addressLine1: Joi.string().required(),
-          addressLine2: Joi.string().optional(),
-          townOrCity: Joi.string().required(),
-          postCode: Joi.string().required()
+        address: Joi.when('dreamSighting', {
+          is: true,
+          then: Joi.object({
+            addressLine1: Joi.string().required(),
+            addressLine2: Joi.string().optional(),
+            townOrCity: Joi.string().required(),
+            postCode: Joi.string().required()
+          })
         }).optional(),
         evidenceFiles: Joi.array().items(file)
       })
