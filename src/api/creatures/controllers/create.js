@@ -1,13 +1,20 @@
 import Joi from 'joi'
 import { createCreature } from '~/src/api/creatures/helpers/create-creature'
 
+const file = Joi.object({
+  filename: Joi.string().required(),
+  fileId: Joi.string().uuid().required(),
+  fileUrl: Joi.string().required()
+})
+
+// TODO with
 const createCreatureController = {
   options: {
     validate: {
       payload: Joi.object({
-        creatureId: Joi.string().required(),
+        creatureId: Joi.string().uuid().required(),
         kind: Joi.string().required(),
-        creatureFileUrls: Joi.array().items(Joi.string()).required(),
+        creatureFiles: Joi.array().items(file),
         date: Joi.date().required(),
         dream: Joi.bool().required(),
         address: Joi.object({
@@ -16,7 +23,7 @@ const createCreatureController = {
           townOrCity: Joi.string().required(),
           postCode: Joi.string().required()
         }).optional(),
-        evidenceFileUrls: Joi.array().items(Joi.string()).optional()
+        evidenceFiles: Joi.array().items(file)
       })
     }
   },
