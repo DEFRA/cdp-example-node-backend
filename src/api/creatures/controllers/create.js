@@ -7,7 +7,6 @@ const file = Joi.object({
   fileUrl: Joi.string().required()
 })
 
-// TODO with
 const createCreatureController = {
   options: {
     validate: {
@@ -16,8 +15,8 @@ const createCreatureController = {
         kind: Joi.string().required(),
         creatureFiles: Joi.array().items(file),
         date: Joi.date().required(),
-        dream: Joi.bool().required(),
-        address: Joi.when('dreamSighting', {
+        realLifeSighting: Joi.bool().required(),
+        address: Joi.when('realLifeSighting', {
           is: true,
           then: Joi.object({
             addressLine1: Joi.string().required(),
