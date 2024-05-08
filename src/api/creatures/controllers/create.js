@@ -12,6 +12,7 @@ const createCreatureController = {
     validate: {
       payload: Joi.object({
         creatureId: Joi.string().uuid().required(),
+        name: Joi.string().required(),
         kind: Joi.string().required(),
         creatureFiles: Joi.array().items(file),
         date: Joi.date().required(),
