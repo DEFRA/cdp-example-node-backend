@@ -4,8 +4,6 @@ import { createPlant } from '~/src/api/plants/helpers/create-plant'
 
 const file = Joi.object({
   filename: Joi.string().required(),
-  uploadId: Joi.string().uuid().required(),
-  fileId: Joi.string().uuid().required(),
   fileUrl: Joi.string().required()
 })
 

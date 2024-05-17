@@ -7,9 +7,9 @@ import {
   updateTrackingStatus
 } from '~/src/api/birds/helpers/update-tracking'
 import {
+  fileStatus,
   trackingStatus,
-  uploadStatus,
-  uploadStatuses
+  uploadStatus
 } from '~/src/api/birds/helpers/tracking-status'
 
 const callbackTrackingController = {
@@ -38,46 +38,27 @@ const callbackTrackingController = {
     }
 
     const payload = request.payload
-    const files = payload?.files
+    const file = payload?.form?.file
 
     request.logger.debug(
-      { birdId, trackingId, tracking, payload, files },
+      { birdId, trackingId, tracking, payload, file },
       'Tracking callback'
     )
 
-    const uploadedStatus = payload?.uploadStatus?.toLowerCase()
-    const s3Key = files?.map((file) => file.s3Key)?.[0]
-    const contentType = files?.map((file) => file.contentType)?.[0]
-    const isCsv = contentType === 'text/csv'
+    const uploadedStatus = payload?.uploadStatus
+    const s3Key = file?.s3Key
+    const contentType = file?.contentType
 
-    if (!uploadedStatus || !uploadStatuses.includes(uploadedStatus)) {
+    if (uploadedStatus !== uploadStatus.ready) {
       request.logger.warn({ trackingId }, `Unknown status: ${uploadedStatus}`)
-      return h.response({ message: 'Unknown upload status' }).code(400)
+      return h.response({ message: 'Unknown upload status' }).code(204)
     }
 
-    if (!s3Key) {
-      request.logger.warn({ trackingId }, `No s3Key`)
-      return h.response({ message: 'No s3Key' }).code(400)
-    }
-
-    if (uploadedStatus === uploadStatus.rejected) {
-      tracking.trackingStatus = trackingStatus.rejected
-      request.logger.warn(
-        { trackingId, s3Key, tracking },
-        'File was rejected by uploader'
-      )
-    }
-
-    if (uploadedStatus === uploadStatus.ready && !isCsv) {
-      tracking.trackingStatus = trackingStatus.rejected
-      request.logger.warn({ trackingId, s3Key, tracking }, 'File is not CSV')
-    }
-
-    if (uploadedStatus === uploadStatus.ready && isCsv) {
+    if (file?.fileStatus === fileStatus.complete) {
       tracking.trackingStatus = trackingStatus.readyforprocessing
       const s3Bucket = payload?.destinationBucket
-      const filename = files?.map((file) => file.filename)?.[0]
-      const contentLength = files?.map((file) => file.contentLength)?.[0]
+      const filename = file.filename
+      const contentLength = file.contentLength
       tracking.fileDetails = {
         s3Key,
         s3Bucket,
@@ -94,6 +75,12 @@ const callbackTrackingController = {
       if (!updateFileResponse) {
         return h.response({ message: 'error' }).code(500)
       }
+    } else {
+      request.logger.warn(
+        { trackingId, s3Key, tracking, file },
+        'File was rejected by uploader'
+      )
+      tracking.trackingStatus = trackingStatus.rejected
     }
 
     const updateStatusResponse = await updateTrackingStatus(

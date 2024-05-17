@@ -5,8 +5,6 @@ import { counter } from '~/src/helpers/metrics/metrics'
 
 const file = Joi.object({
   filename: Joi.string().required(),
-  uploadId: Joi.string().uuid().required(),
-  fileId: Joi.string().uuid().required(),
   fileUrl: Joi.string().required()
 })
 
