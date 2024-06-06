@@ -26,8 +26,8 @@ jobs:
       - run: npm run lint
       - run: npm test
       # https://community.sonarsource.com/t/code-coverage-doesnt-work-with-github-action/16747/6
-      # - name: make sonar aware of coverage tests path
-      #   run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage/lcov.info
+      - name: make sonar aware of coverage tests path
+        run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage/lcov.info
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
         uses: SonarSource/sonarcloud-github-action@master
