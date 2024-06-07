@@ -1,5 +1,5 @@
 import { updateTrackingStatus } from '~/src/api/birds/helpers/update-tracking'
-import { trackingStatus } from './tracking-status'
+import { trackingStatus } from '~/src/api/birds/helpers/tracking-status'
 
 async function simulateProcessing(request, tracking) {
   if (!tracking.trackingStatus) {
@@ -11,7 +11,7 @@ async function simulateProcessing(request, tracking) {
     tracking.trackingStatus === trackingStatus.ready ||
     tracking.trackingStatus === trackingStatus.rejected
   ) {
-    request.logger.warn({ tracking }, 'Simulated processing already complete')
+    request.logger.info({ tracking }, 'Simulated processing already complete')
     return tracking
   }
 
