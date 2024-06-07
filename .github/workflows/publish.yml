@@ -27,9 +27,10 @@ jobs:
         uses: DEFRA/cdp-build-action/build@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          # https://community.sonarsource.com/t/code-coverage-doesnt-work-with-github-action/16747/6
-          # - name: make sonar aware of coverage tests path
-          #   run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage/lcov.info
+      # No longer needed with the latest version of the SonarCloud GitHub Action
+      # https://community.sonarsource.com/t/code-coverage-doesnt-work-with-github-action/16747/6
+      # - name: make sonar aware of coverage tests path
+      #   run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage/lcov.info
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

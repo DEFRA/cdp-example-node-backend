@@ -93,6 +93,4 @@ describe('#simulateProcessing', () => {
       'Not yet finished uploading'
     )
   })
-
-  // test('Should log error and return tracking if ready for processing', async () => {
 })
