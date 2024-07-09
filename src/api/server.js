@@ -4,7 +4,7 @@ import hapi from '@hapi/hapi'
 import { config } from '~/src/config'
 import { router } from '~/src/api/router'
 import { requestLogger } from '~/src/helpers/logging/request-logger'
-import { mongoPlugin } from '~/src/helpers/mongodb'
+import { mongoDb } from '~/src/helpers/mongodb'
 import { failAction } from '~/src/helpers/fail-action'
 import { secureContext } from '~/src/helpers/secure-context'
 
@@ -45,18 +45,7 @@ async function createServer() {
     await server.register(secureContext)
   }
 
-  await server.register({
-    plugin: mongoPlugin,
-    options: {
-      mongoUrl: config.get('mongoUri'),
-      databaseName: config.get('mongoDatabase'),
-      retryWrites: false,
-      readPreference: 'secondary',
-      ...(server.secureContext && { secureContext: server.secureContext })
-    }
-  })
-
-  await server.register(router)
+  await server.register([mongoDb, router])
 
   return server
 }

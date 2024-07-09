@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb'
+import { config } from '~/src/config'
 
 async function createAnimalsIndexes(db) {
   await db.collection('animals').createIndex({ animalId: 1 })
@@ -13,31 +14,44 @@ async function createBirdTrackingIndexes(db) {
   await db.collection('birdtrackings').createIndex({ trackingId: 1 })
 }
 
-const mongoPlugin = {
-  name: 'mongodb',
-  version: '1.0.0',
-  register: async function (server, options) {
-    server.logger.info('Setting up mongodb')
+const mongoDb = {
+  plugin: {
+    name: 'mongodb',
+    version: '1.0.0',
+    register: async function (server, options) {
+      server.logger.info('Setting up mongodb')
 
-    const client = await MongoClient.connect(options.mongoUrl, {
-      retryWrites: options.retryWrites,
-      readPreference: options.readPreference,
-      secureContext: options.secureContext
-    })
-    const databaseName = options.databaseName
-    const db = client.db(databaseName)
+      const client = await MongoClient.connect(options.mongoUrl, {
+        retryWrites: options.retryWrites,
+        readPreference: options.readPreference,
+        ...(server.secureContext && { secureContext: server.secureContext })
+      })
+      const databaseName = options.databaseName
+      const db = client.db(databaseName)
 
-    await createAnimalsIndexes(db)
-    await createPlantIndexes(db)
-    await createCreaturesIndexes(db)
-    await createBirdTrackingIndexes(db)
+      await createAnimalsIndexes(db)
+      await createPlantIndexes(db)
+      await createCreaturesIndexes(db)
+      await createBirdTrackingIndexes(db)
 
-    server.logger.info(`mongodb connected to ${databaseName}`)
+      server.logger.info(`mongodb connected to ${databaseName}`)
 
-    server.decorate('server', 'mongoClient', client)
-    server.decorate('server', 'db', db)
-    server.decorate('request', 'db', db)
+      server.decorate('server', 'mongoClient', client)
+      server.decorate('server', 'db', db)
+      server.decorate('request', 'db', db)
+
+      server.events.on('stop', async () => {
+        server.logger.info(`Closing Mongo client`)
+        await client.close(true)
+      })
+    }
+  },
+  options: {
+    mongoUrl: config.get('mongoUri'),
+    databaseName: config.get('mongoDatabase'),
+    retryWrites: false,
+    readPreference: 'secondary'
   }
 }
 
-export { mongoPlugin }
+export { mongoDb }
