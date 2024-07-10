@@ -7,6 +7,7 @@ import { requestLogger } from '~/src/helpers/logging/request-logger'
 import { mongoDb } from '~/src/helpers/mongodb'
 import { failAction } from '~/src/helpers/fail-action'
 import { secureContext } from '~/src/helpers/secure-context'
+import { pulse } from '~/src/helpers/pulse'
 
 const isProduction = config.get('isProduction')
 
@@ -45,7 +46,7 @@ async function createServer() {
     await server.register(secureContext)
   }
 
-  await server.register([mongoDb, router])
+  await server.register([pulse, mongoDb, router])
 
   return server
 }
