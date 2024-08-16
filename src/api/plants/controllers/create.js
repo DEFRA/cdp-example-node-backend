@@ -20,7 +20,7 @@ const createPlantController = {
   handler: async (request, h) => {
     const plant = await createPlant(request.db, request.payload)
 
-    return h.response({ message: 'success!', plant }).code(200)
+    return h.response({ message: 'success!!', plant }).code(200)
   }
 }
 
