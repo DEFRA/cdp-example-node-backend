@@ -4,7 +4,7 @@ import process from 'node:process'
 
 const logger = createLogger()
 const serverPromise = startServer()
-
+logger.info('HOTFIX')
 process.on('unhandledRejection', (error) => {
   logger.info('Unhandled rejection')
   logger.error(error)
