@@ -8,12 +8,6 @@ const config = convict({
     default: 'development',
     env: 'NODE_ENV'
   },
-  version: {
-    doc: 'The application version.',
-    format: String,
-    default: '0.1.0',
-    env: 'CONTAINER_VERSION'
-  },
   port: {
     doc: 'The port to bind.',
     format: 'port',
