@@ -12,6 +12,6 @@ describe('#healthController', () => {
     expect(mockViewHandler.response).toHaveBeenCalledWith({
       message: 'success'
     })
-    expect(mockViewHandler.code).toHaveBeenCalledWith(400)
+    expect(mockViewHandler.code).toHaveBeenCalledWith(500)
   })
 })
