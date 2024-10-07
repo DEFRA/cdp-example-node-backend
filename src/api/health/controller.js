@@ -1,5 +1,5 @@
 const healthController = {
-  handler: (request, h) => h.response({ message: 'success' }).code(200)
+  handler: (request, h) => h.response({ message: 'success' }).code(400)
 }
 
 export { healthController }
