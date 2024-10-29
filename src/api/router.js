@@ -4,6 +4,7 @@ import { callback } from '~/src/api/callback'
 import { plants } from '~/src/api/plants'
 import { creatures } from '~/src/api/creatures'
 import { birds } from '~/src/api/birds'
+import { exampleApi } from '~/src/api/example'
 
 const router = {
   plugin: {
@@ -15,7 +16,8 @@ const router = {
         birds,
         callback,
         creatures,
-        plants
+        plants,
+        exampleApi
       ])
     }
   }
