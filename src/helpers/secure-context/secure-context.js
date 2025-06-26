@@ -2,31 +2,41 @@ import tls from 'node:tls'
 
 import { getTrustStoreCerts } from '~/src/helpers/secure-context/get-trust-store-certs'
 
-const secureContext = {
+/**
+ * Creates a new secure context loaded from Base64 encoded certs
+ * @satisfies {ServerRegisterPluginObject<void>}
+ */
+export const secureContext = {
   plugin: {
     name: 'secure-context',
-    register: async (server) => {
-      const originalCreateSecureContext = tls.createSecureContext
+    register(server, options) {
+      const trustStoreCerts = getTrustStoreCerts(process.env)
+      server.logger.info(
+        `Found ${trustStoreCerts.length} TRUSTSTORE_ certificates to install`
+      )
 
-      tls.createSecureContext = (options = {}) => {
-        const trustStoreCerts = getTrustStoreCerts(process.env)
+      if (trustStoreCerts.length === 0) return
 
-        if (!trustStoreCerts.length) {
-          server.logger.info('Could not find any TRUSTSTORE_ certificates')
-        }
+      const originalTlsCreateSecureContext = tls.createSecureContext
+      const defaultCAs = tls.rootCertificates
 
-        const secureContext = originalCreateSecureContext(options)
-
-        trustStoreCerts.forEach((cert) => {
-          secureContext.context.addCACert(cert)
-        })
-
-        return secureContext
+      tls.createSecureContext = function (options = {}) {
+        const mergedCa = [
+          ...(Array.isArray(options.ca)
+            ? options.ca
+            : options.ca
+              ? [options.ca]
+              : []),
+          ...defaultCAs,
+          ...trustStoreCerts
+        ]
+        const newOptions = { ...options, ca: mergedCa }
+        return originalTlsCreateSecureContext(newOptions)
       }
-
-      server.decorate('server', 'secureContext', tls.createSecureContext())
     }
   }
 }
 
-export { secureContext }
+/**
+ * @import { ServerRegisterPluginObject } from '@hapi/hapi'
+ */

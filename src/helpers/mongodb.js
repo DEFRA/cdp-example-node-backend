@@ -23,8 +23,7 @@ const mongoDb = {
 
       const client = await MongoClient.connect(options.mongoUrl, {
         retryWrites: options.retryWrites,
-        readPreference: options.readPreference,
-        ...(server.secureContext && { secureContext: server.secureContext })
+        readPreference: options.readPreference
       })
       const databaseName = options.databaseName
       const db = client.db(databaseName)
