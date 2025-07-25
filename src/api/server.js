@@ -6,10 +6,8 @@ import { router } from '~/src/api/router'
 import { requestLogger } from '~/src/helpers/logging/request-logger'
 import { mongoDb } from '~/src/helpers/mongodb'
 import { failAction } from '~/src/helpers/fail-action'
-import { secureContext } from '~/src/helpers/secure-context'
 import { pulse } from '~/src/helpers/pulse'
-
-const isProduction = config.get('isProduction')
+import { secureContext } from '@defra/hapi-secure-context'
 
 async function createServer() {
   const server = hapi.server({
@@ -41,11 +39,7 @@ async function createServer() {
   })
 
   await server.register(requestLogger)
-
-  if (isProduction) {
-    await server.register(secureContext)
-  }
-
+  await server.register(secureContext)
   await server.register([pulse, mongoDb, router])
 
   return server
