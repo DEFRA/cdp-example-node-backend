@@ -2,7 +2,7 @@
 
 Core delivery platform Node.js Backend example.
 
-Based on the CDP template https://github.com/DEFRA/cdp-node-backend-template
+Based on the CDP template https://github.com/DEFRA/cdp-node-backend-template.
 
 ![Publish workflow](https://github.com/DEFRA/cdp-example-node-backend/actions/workflows/publish.yml/badge.svg)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cdp-example-node-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DEFRA_cdp-example-node-backend)
 
