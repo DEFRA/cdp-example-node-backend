@@ -7,6 +7,7 @@ import { statusCodeController } from '~/src/api/example/controllers/status-code-
 import { multipartController } from '~/src/api/example/controllers/multipart-controller'
 import { longPathController } from '~/src/api/example/controllers/long-path-controller'
 import { headerController } from '~/src/api/example/controllers/header-controller'
+import { echoController } from '~/src/api/example/controllers/echo-controller'
 
 export const exampleApi = {
   plugin: {
@@ -47,6 +48,11 @@ export const exampleApi = {
           method: ['*'],
           path: '/api/error/{code}',
           ...statusCodeController
+        },
+        {
+          method: ['*'],
+          path: '/api/echo',
+          ...echoController
         }
       ])
     }
