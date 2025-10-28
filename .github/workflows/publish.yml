@@ -30,7 +30,7 @@ jobs:
           npm test
 
       - name: Build and Publish
-        uses: DEFRA/cdp-build-action/build@main
+        uses: DEFRA/cdp-build-action/build@sbom
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
