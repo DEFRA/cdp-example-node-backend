@@ -23,6 +23,7 @@ jobs:
           fetch-depth: 0 # required
 
       - name: Publish Hot Fix
-        uses: DEFRA/cdp-build-action/build-hotfix@main
+        uses: DEFRA/cdp-build-action/build-hotfix@build-stage
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          push-build-stages: true
