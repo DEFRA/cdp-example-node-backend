@@ -30,7 +30,7 @@ jobs:
           npm test
 
       - name: Build and Publish
-        uses: DEFRA/cdp-build-action/build@build-stages
+        uses: DEFRA/cdp-build-action/build@build-stage
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           push-build-stages: true
