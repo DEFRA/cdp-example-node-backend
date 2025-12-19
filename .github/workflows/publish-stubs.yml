@@ -26,6 +26,6 @@ jobs:
         uses: DEFRA/cdp-build-action/build-dockerhub@main
         with:
           image-name: 'cdp-example-node-backend-stubs'
-          dockerfile: ./Dockerfile.stub 
+          dockerfile: ./Dockerfile.stubs
           version: latest
 
