@@ -8,6 +8,7 @@ import { multipartController } from '~/src/api/example/controllers/multipart-con
 import { longPathController } from '~/src/api/example/controllers/long-path-controller'
 import { headerController } from '~/src/api/example/controllers/header-controller'
 import { echoController } from '~/src/api/example/controllers/echo-controller'
+import { proxyController } from '~/src/api/example/controllers/proxy-controller'
 
 export const exampleApi = {
   plugin: {
@@ -18,6 +19,11 @@ export const exampleApi = {
           method: ['*'],
           path: '/api/ok',
           ...okController
+        },
+        {
+          method: ['GET'],
+          path: '/api/proxy',
+          ...proxyController
         },
         {
           method: ['GET'],

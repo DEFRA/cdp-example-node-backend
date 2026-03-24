@@ -8,10 +8,12 @@ import { mongoDb } from '~/src/helpers/mongodb'
 import { failAction } from '~/src/helpers/fail-action'
 import { secureContext } from '~/src/helpers/secure-context'
 import { pulse } from '~/src/helpers/pulse'
+import { setupProxy } from '~/src/helpers/proxy/setup-proxy'
 
 const isProduction = config.get('isProduction')
 
 async function createServer() {
+  setupProxy()
   const server = hapi.server({
     port: config.get('port'),
     routes: {
