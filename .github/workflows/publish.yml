@@ -30,11 +30,10 @@ jobs:
           npm test
 
       - name: Build and Publish
-        uses: DEFRA/cdp-build-action/build@main
+        uses: DEFRA/cdp-build-action/build@CORE-2762
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          push-build-stages: true
-
+          
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.3.1
         env:
