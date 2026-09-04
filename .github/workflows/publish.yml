@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - CORE-3876-test # temporary, for testing DEFRA/cdp-build-action CORE-3876
 
 permissions:
   id-token: write
@@ -30,10 +31,10 @@ jobs:
           npm test
 
       - name: Build and Publish
-        uses: DEFRA/cdp-build-action/build@main
+        uses: DEFRA/cdp-build-action/build@CORE-3876-build-prerelease-support # temporary, for testing backward-compat (no new inputs set)
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.3.1
         env:
