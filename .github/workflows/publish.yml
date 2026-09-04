@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # temporary, for testing DEFRA/cdp-build-action CORE-3876
+      - CORE-3876-test # temporary, for testing DEFRA/cdp-build-action CORE-3876
 
 permissions:
   id-token: write
