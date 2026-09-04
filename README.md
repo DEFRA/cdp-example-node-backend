@@ -47,6 +47,7 @@ Install application dependencies:
 
 ```bash
 npm install
+
 ```
 
 ### Development
