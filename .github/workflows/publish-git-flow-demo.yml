@@ -1,0 +1,47 @@
+name: Publish (git-flow demo)
+
+# Temporary, throwaway workflow for demoing the relaxed SemVer v2 / git-flow prerelease
+# tagging support in DEFRA/cdp-build-action. Safe to delete once the demo is done -
+# it does not touch or affect the real publish.yml release path.
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: 'Tag this build as a pre-release (git-flow style)'
+        type: boolean
+        default: true
+      prerelease-suffix:
+        description: 'Label for the pre-release tag, e.g. new-search, hotfix-a'
+        type: string
+        default: 'demo'
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+env:
+  AWS_REGION: eu-west-2
+  AWS_ACCOUNT_ID: "094954420758"
+
+jobs:
+  build:
+    name: CDP-build-workflow (git-flow demo)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - run: |
+          npm ci
+          npm run format:check
+          npm run lint
+          npm test
+
+      - name: Build and Publish
+        uses: DEFRA/cdp-build-action/build@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ inputs.prerelease }}
+          prerelease-suffix: ${{ inputs.prerelease-suffix }}
