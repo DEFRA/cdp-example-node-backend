@@ -1,0 +1,19 @@
+name: publish-docs.yml
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: publish docs to S3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # required
+
+      - name: Publish Hot Fix
+        uses: DEFRA/cdp-build-action/publish-api-docs@CORE-4347
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./docs
