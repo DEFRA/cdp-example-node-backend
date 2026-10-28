@@ -2,6 +2,10 @@ name: publish-docs.yml
 on:
   workflow_dispatch:
 
+env:
+  AWS_REGION: eu-west-2
+  AWS_ACCOUNT_ID: "094954420758"
+
 jobs:
   publish:
     name: publish docs to S3
