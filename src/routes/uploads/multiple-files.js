@@ -6,7 +6,7 @@ import {
   deleteCreature,
   getCreature,
   getCreatures
-} from '#/services/creatures.js'
+} from '#/services/uploads/multiple-files.js'
 
 const file = Joi.object({
   filename: Joi.string().required(),
@@ -14,10 +14,10 @@ const file = Joi.object({
   fileUrl: Joi.string().required()
 })
 
-export const creatures = [
+export const multipleFiles = [
   {
     method: 'GET',
-    path: '/creatures',
+    path: '/uploads/multiple-files/creatures',
     handler: async (request, h) => {
       const creatures = await getCreatures(request.db)
 
@@ -26,7 +26,7 @@ export const creatures = [
   },
   {
     method: 'POST',
-    path: '/creatures',
+    path: '/uploads/multiple-files/creatures',
     options: {
       validate: {
         payload: Joi.object({
@@ -57,7 +57,7 @@ export const creatures = [
   },
   {
     method: 'GET',
-    path: '/creatures/{creatureId}',
+    path: '/uploads/multiple-files/creatures/{creatureId}',
     options: {
       validate: {
         params: Joi.object({
@@ -77,7 +77,7 @@ export const creatures = [
   },
   {
     method: 'DELETE',
-    path: '/creatures/{creatureId}',
+    path: '/uploads/multiple-files/creatures/{creatureId}',
     options: {
       validate: {
         params: Joi.object({

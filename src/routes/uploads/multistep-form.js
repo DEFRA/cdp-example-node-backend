@@ -1,17 +1,21 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { createAnimal, getAnimal, getAnimals } from '#/services/animals.js'
+import {
+  createAnimal,
+  getAnimal,
+  getAnimals
+} from '#/services/uploads/multistep-form.js'
 
 const file = Joi.object({
   filename: Joi.string().required(),
   fileUrl: Joi.string().required()
 })
 
-export const animals = [
+export const multistepForm = [
   {
     method: 'GET',
-    path: '/animals',
+    path: '/uploads/multistep-form/animals',
     handler: async (request, h) => {
       const animals = await getAnimals(request.db)
       await request.metrics.counter('animals-list')
@@ -20,7 +24,7 @@ export const animals = [
   },
   {
     method: 'POST',
-    path: '/animals',
+    path: '/uploads/multistep-form/animals',
     options: {
       validate: {
         payload: Joi.object({
@@ -39,7 +43,7 @@ export const animals = [
   },
   {
     method: 'GET',
-    path: '/animals/{animalId}',
+    path: '/uploads/multistep-form/animals/{animalId}',
     options: {
       validate: {
         params: Joi.object({

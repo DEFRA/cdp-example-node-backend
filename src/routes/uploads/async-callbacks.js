@@ -12,15 +12,15 @@ import {
   updateTrackingStatus,
   updateTrackingStatusUrl,
   uploadStatus
-} from '#/services/birds.js'
+} from '#/services/uploads/async-callbacks.js'
 
 const birdIdSchema = Joi.number().integer().positive().required()
 const trackingIdSchema = Joi.string().uuid().required()
 
-export const birds = [
+export const asyncCallbacks = [
   {
     method: 'POST',
-    path: '/birds/{birdId}/tracking/{trackingId}/callback',
+    path: '/uploads/async-callbacks/birds/{birdId}/tracking/{trackingId}/callback',
     options: {
       validate: {
         params: Joi.object({
@@ -110,7 +110,7 @@ export const birds = [
   },
   {
     method: 'POST',
-    path: '/birds/{birdId}/tracking/{trackingId}/status-url',
+    path: '/uploads/async-callbacks/birds/{birdId}/tracking/{trackingId}/status-url',
     options: {
       validate: {
         params: Joi.object({
@@ -139,7 +139,7 @@ export const birds = [
   },
   {
     method: 'GET',
-    path: '/birds/{birdId}/tracking/{trackingId}',
+    path: '/uploads/async-callbacks/birds/{birdId}/tracking/{trackingId}',
     options: {
       validate: {
         params: Joi.object({
@@ -175,7 +175,7 @@ export const birds = [
   },
   {
     method: 'POST',
-    path: '/birds/{birdId}/tracking',
+    path: '/uploads/async-callbacks/birds/{birdId}/tracking',
     options: {
       validate: {
         params: Joi.object({ birdId: birdIdSchema }),
@@ -203,7 +203,7 @@ export const birds = [
   },
   {
     method: 'GET',
-    path: '/birds/{birdId}/trackings',
+    path: '/uploads/async-callbacks/birds/{birdId}/trackings',
     options: {
       validate: {
         params: Joi.object({ birdId: birdIdSchema })

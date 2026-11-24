@@ -1,6 +1,6 @@
-import { trackingStatus } from '#/services/birds.js'
+import { trackingStatus } from '#/services/uploads/async-callbacks.js'
 
-describe('#birds routes', () => {
+describe('#asyncCallbacks routes', () => {
   let server
 
   beforeAll(async () => {
@@ -18,7 +18,7 @@ describe('#birds routes', () => {
   test('Should create a tracking and move it to processing after upload callback', async () => {
     const created = await server.inject({
       method: 'POST',
-      url: '/birds/1/tracking',
+      url: '/uploads/async-callbacks/birds/1/tracking',
       payload: { spotter: 'Ann' }
     })
 
@@ -33,14 +33,14 @@ describe('#birds routes', () => {
 
     const list = await server.inject({
       method: 'GET',
-      url: '/birds/1/trackings'
+      url: '/uploads/async-callbacks/birds/1/trackings'
     })
     expect(list.statusCode).toBe(200)
     expect(list.result.trackings.length).toBeGreaterThan(0)
 
     const callback = await server.inject({
       method: 'POST',
-      url: `/birds/1/tracking/${trackingId}/callback`,
+      url: `/uploads/async-callbacks/birds/1/tracking/${trackingId}/callback`,
       payload: {
         uploadStatus: 'ready',
         destinationBucket: 'bucket',
@@ -59,7 +59,7 @@ describe('#birds routes', () => {
 
     const found = await server.inject({
       method: 'GET',
-      url: `/birds/1/tracking/${trackingId}`
+      url: `/uploads/async-callbacks/birds/1/tracking/${trackingId}`
     })
     expect(found.statusCode).toBe(200)
     expect(found.result.tracking.tracking.trackingStatus).toBe(
@@ -70,9 +70,28 @@ describe('#birds routes', () => {
   test('Should return 404 for unknown tracking', async () => {
     const response = await server.inject({
       method: 'GET',
-      url: '/birds/1/tracking/3a7e15b1-3fb7-4e53-8ece-8eb96c7b6f61'
+      url: '/uploads/async-callbacks/birds/1/tracking/3a7e15b1-3fb7-4e53-8ece-8eb96c7b6f61'
     })
 
     expect(response.statusCode).toBe(404)
   })
+
+  test.each(['/uploads/async-callbacks/birds', '/birds'])(
+    'Should create and list trackings on %s',
+    async (basePath) => {
+      const created = await server.inject({
+        method: 'POST',
+        url: `${basePath}/2/tracking`,
+        payload: { spotter: 'Bob' }
+      })
+      expect(created.statusCode).toBe(200)
+
+      const list = await server.inject({
+        method: 'GET',
+        url: `${basePath}/2/trackings`
+      })
+      expect(list.statusCode).toBe(200)
+      expect(list.result.trackings.length).toBeGreaterThan(0)
+    }
+  )
 })

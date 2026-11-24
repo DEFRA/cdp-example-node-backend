@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
-describe('#creatures routes', () => {
+describe('#multipleFiles routes', () => {
   let server
 
   beforeAll(async () => {
@@ -19,7 +19,7 @@ describe('#creatures routes', () => {
     const creatureId = randomUUID()
     const created = await server.inject({
       method: 'POST',
-      url: '/creatures',
+      url: '/uploads/multiple-files/creatures',
       payload: {
         creatureId,
         name: 'Nessie',
@@ -34,12 +34,15 @@ describe('#creatures routes', () => {
 
     const found = await server.inject({
       method: 'GET',
-      url: `/creatures/${creatureId}`
+      url: `/uploads/multiple-files/creatures/${creatureId}`
     })
     expect(found.statusCode).toBe(200)
     expect(found.result.creature).toMatchObject({ name: 'Nessie' })
 
-    const list = await server.inject({ method: 'GET', url: '/creatures' })
+    const list = await server.inject({
+      method: 'GET',
+      url: '/uploads/multiple-files/creatures'
+    })
     expect(list.statusCode).toBe(200)
     expect(list.result.creatures.length).toBeGreaterThan(0)
   })
@@ -47,9 +50,19 @@ describe('#creatures routes', () => {
   test('Should return 404 for unknown creature', async () => {
     const response = await server.inject({
       method: 'GET',
-      url: `/creatures/${randomUUID()}`
+      url: `/uploads/multiple-files/creatures/${randomUUID()}`
     })
 
     expect(response.statusCode).toBe(404)
   })
+
+  test.each(['/uploads/multiple-files/creatures', '/creatures'])(
+    'Should list creatures on %s',
+    async (url) => {
+      const response = await server.inject({ method: 'GET', url })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.result.message).toBe('success')
+    }
+  )
 })

@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
-// Test endpoints, see example-api.md
-export const exampleApi = [
+// Test endpoints, see test-endpoints.md
+export const testEndpoints = [
   {
     method: ['*'],
     path: '/api/ok',

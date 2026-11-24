@@ -1,4 +1,4 @@
-describe('#animals routes', () => {
+describe('#multistepForm routes', () => {
   let server
 
   beforeAll(async () => {
@@ -17,7 +17,7 @@ describe('#animals routes', () => {
   test('Should create, get and list animals', async () => {
     const created = await server.inject({
       method: 'POST',
-      url: '/animals',
+      url: '/uploads/multistep-form/animals',
       payload: { name: 'Rex', kind: 'dog', phoneNumber: '0123' }
     })
 
@@ -28,12 +28,15 @@ describe('#animals routes', () => {
 
     const found = await server.inject({
       method: 'GET',
-      url: `/animals/${animal.animalId}`
+      url: `/uploads/multistep-form/animals/${animal.animalId}`
     })
     expect(found.statusCode).toBe(200)
     expect(found.result.animal).toMatchObject({ name: 'Rex' })
 
-    const list = await server.inject({ method: 'GET', url: '/animals' })
+    const list = await server.inject({
+      method: 'GET',
+      url: '/uploads/multistep-form/animals'
+    })
     expect(list.statusCode).toBe(200)
     expect(list.result.message).toBe('success')
     expect(list.result.animals.length).toBeGreaterThan(0)
@@ -43,7 +46,7 @@ describe('#animals routes', () => {
   test('Should return 404 for unknown animal', async () => {
     const response = await server.inject({
       method: 'GET',
-      url: '/animals/aaaaaaaaaaaaaaaaaaaaaaaa'
+      url: '/uploads/multistep-form/animals/aaaaaaaaaaaaaaaaaaaaaaaa'
     })
 
     expect(response.statusCode).toBe(404)
@@ -52,10 +55,26 @@ describe('#animals routes', () => {
   test('Should reject invalid payload', async () => {
     const response = await server.inject({
       method: 'POST',
-      url: '/animals',
+      url: '/uploads/multistep-form/animals',
       payload: { name: 'Rex' }
     })
 
     expect(response.statusCode).toBe(400)
   })
+
+  test.each(['/uploads/multistep-form/animals', '/animals'])(
+    'Should list and validate animals on %s',
+    async (url) => {
+      const list = await server.inject({ method: 'GET', url })
+      expect(list.statusCode).toBe(200)
+      expect(list.result.message).toBe('success')
+
+      const invalid = await server.inject({
+        method: 'POST',
+        url,
+        payload: { name: 'Rex' }
+      })
+      expect(invalid.statusCode).toBe(400)
+    }
+  )
 })

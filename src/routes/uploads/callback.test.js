@@ -13,13 +13,16 @@ describe('#callback route', () => {
     await server.stop({ timeout: 1000 })
   })
 
-  test('Should accept a callback', async () => {
-    const response = await server.inject({
-      method: 'POST',
-      url: '/callback',
-      payload: { foo: 'bar' }
-    })
+  test.each(['/uploads/callback', '/callback'])(
+    'Should accept a callback on %s',
+    async (url) => {
+      const response = await server.inject({
+        method: 'POST',
+        url,
+        payload: { foo: 'bar' }
+      })
 
-    expect(response.statusCode).toBe(200)
-  })
+      expect(response.statusCode).toBe(200)
+    }
+  )
 })

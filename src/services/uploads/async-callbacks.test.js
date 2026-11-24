@@ -1,4 +1,4 @@
-import { simulateProcessing, trackingStatus } from './birds.js'
+import { simulateProcessing, trackingStatus } from './async-callbacks.js'
 
 describe('#simulateProcessing', () => {
   test('Should return tracking if already ready', async () => {

@@ -1,4 +1,4 @@
-describe('#exampleApi routes', () => {
+describe('#testEndpoints routes', () => {
   let server
 
   beforeAll(async () => {

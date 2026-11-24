@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
-describe('#plants routes', () => {
+describe('#addAnother routes', () => {
   let server
 
   beforeAll(async () => {
@@ -19,7 +19,7 @@ describe('#plants routes', () => {
     const plantId = randomUUID()
     const created = await server.inject({
       method: 'POST',
-      url: '/plants',
+      url: '/uploads/add-another/plants',
       payload: { plantId, name: 'Fern' }
     })
 
@@ -28,12 +28,15 @@ describe('#plants routes', () => {
 
     const found = await server.inject({
       method: 'GET',
-      url: `/plants/${plantId}`
+      url: `/uploads/add-another/plants/${plantId}`
     })
     expect(found.statusCode).toBe(200)
     expect(found.result.plant).toMatchObject({ plantId, name: 'Fern' })
 
-    const list = await server.inject({ method: 'GET', url: '/plants' })
+    const list = await server.inject({
+      method: 'GET',
+      url: '/uploads/add-another/plants'
+    })
     expect(list.statusCode).toBe(200)
     expect(list.result.plants.length).toBeGreaterThan(0)
   })
@@ -41,9 +44,19 @@ describe('#plants routes', () => {
   test('Should return 404 for unknown plant', async () => {
     const response = await server.inject({
       method: 'GET',
-      url: `/plants/${randomUUID()}`
+      url: `/uploads/add-another/plants/${randomUUID()}`
     })
 
     expect(response.statusCode).toBe(404)
   })
+
+  test.each(['/uploads/add-another/plants', '/plants'])(
+    'Should list plants on %s',
+    async (url) => {
+      const response = await server.inject({ method: 'GET', url })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.result.message).toBe('success')
+    }
+  )
 })

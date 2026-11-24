@@ -1,6 +1,6 @@
-# Example API
+# Test endpoints
 
-The example namespace provides various test endpoints for testing purposes.
+The `/api/*` routes are HTTP test endpoints, e.g. for checking proxies and service-to-service calls.
 
 ## /api/ok
 

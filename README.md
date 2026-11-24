@@ -21,6 +21,8 @@ Based on the CDP template https://github.com/DEFRA/cdp-node-backend-template.
   - [Formatting](#formatting)
     - [Windows prettier issue](#windows-prettier-issue)
 - [API endpoints](#api-endpoints)
+  - [Temporary aliases](#temporary-aliases)
+  - [Code layout](#code-layout)
 - [Development helpers](#development-helpers)
   - [MongoDB Locks](#mongodb-locks)
   - [Proxy](#proxy)
@@ -132,22 +134,54 @@ git config --global core.autocrlf false
 
 ## API endpoints
 
-| Endpoint                                                 | Description                                                     |
-| :------------------------------------------------------- | :-------------------------------------------------------------- |
-| `GET: /health`                                           | Health                                                          |
-| `GET, POST: /animals`                                    | List or create animals                                          |
-| `GET: /animals/<animalId>`                               | Animal by ID                                                    |
-| `GET, POST: /plants`                                     | List or create plants                                           |
-| `GET: /plants/<plantId>`                                 | Plant by ID                                                     |
-| `GET, POST: /creatures`                                  | List or create creatures                                        |
-| `GET, DELETE: /creatures/<creatureId>`                   | Get or delete a creature                                        |
-| `POST: /birds/<birdId>/tracking`                         | Create a bird tracking                                          |
-| `GET: /birds/<birdId>/trackings`                         | Trackings for a bird                                            |
-| `GET: /birds/<birdId>/tracking/<trackingId>`             | Tracking by ID (simulates processing)                           |
-| `POST: /birds/<birdId>/tracking/<trackingId>/callback`   | Upload callback for a tracking                                  |
-| `POST: /birds/<birdId>/tracking/<trackingId>/status-url` | Set the status URL of a tracking                                |
-| `POST: /callback`                                        | Logs the callback payload                                       |
-| `/api/*`                                                 | Test endpoints, see [example-api.md](src/routes/example-api.md) |
+The upload examples are grouped by feature, one route file per example under `src/routes/uploads/`. Each example's
+paths start with `/uploads/<example>`.
+
+| Endpoint                                                                         | Description                                                           |
+| :------------------------------------------------------------------------------- | :-------------------------------------------------------------------- |
+| `GET: /health`                                                                   | Health                                                                |
+| `GET, POST: /uploads/multistep-form/animals`                                     | List or create animals                                                |
+| `GET: /uploads/multistep-form/animals/<animalId>`                                | Animal by ID                                                          |
+| `GET, POST: /uploads/add-another/plants`                                         | List or create plants                                                 |
+| `GET: /uploads/add-another/plants/<plantId>`                                     | Plant by ID                                                           |
+| `GET, POST: /uploads/multiple-files/creatures`                                   | List or create creatures                                              |
+| `GET, DELETE: /uploads/multiple-files/creatures/<creatureId>`                    | Get or delete a creature                                              |
+| `POST: /uploads/async-callbacks/birds/<birdId>/tracking`                         | Create a bird tracking                                                |
+| `GET: /uploads/async-callbacks/birds/<birdId>/trackings`                         | Trackings for a bird                                                  |
+| `GET: /uploads/async-callbacks/birds/<birdId>/tracking/<trackingId>`             | Tracking by ID (simulates processing)                                 |
+| `POST: /uploads/async-callbacks/birds/<birdId>/tracking/<trackingId>/callback`   | Upload callback for a tracking                                        |
+| `POST: /uploads/async-callbacks/birds/<birdId>/tracking/<trackingId>/status-url` | Set the status URL of a tracking                                      |
+| `POST: /uploads/callback`                                                        | Logs any cdp-uploader callback payload                                |
+| `/api/*`                                                                         | Test endpoints, see [test-endpoints.md](src/routes/test-endpoints.md) |
+
+### Temporary aliases
+
+Every `/uploads/...` route is also served on its old path, without the `/uploads/<example>` prefix (e.g. `/animals`,
+`/birds/<birdId>/trackings`, `/callback`), so the frontend and backend can be released independently. The aliases are
+built in [src/routes/uploads/index.js](src/routes/uploads/index.js) and will be removed once the frontend uses the new
+paths.
+
+### Code layout
+
+```
+src/
+├── plugins/                   # from the template: mongodb, router, pulse…
+├── routes/
+│   ├── health.js
+│   ├── test-endpoints.js      # /api/* test endpoints
+│   └── uploads/
+│       ├── index.js           # all upload routes, plus the temporary aliases
+│       ├── multistep-form.js  # animals
+│       ├── multiple-files.js  # creatures
+│       ├── add-another.js     # plants
+│       ├── async-callbacks.js # birds
+│       └── callback.js        # generic uploader callback logger
+└── services/
+    └── uploads/               # MongoDB helpers, one file per example
+```
+
+A new feature is a new sibling of `uploads/` in both `routes/` and `services/`. MongoDB collection names (`animals`,
+`creatures`, `plants`, `birdtrackings`) are unchanged.
 
 ## Development helpers
 

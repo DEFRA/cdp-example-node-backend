@@ -1,17 +1,21 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { createPlant, getPlant, getPlants } from '#/services/plants.js'
+import {
+  createPlant,
+  getPlant,
+  getPlants
+} from '#/services/uploads/add-another.js'
 
 const file = Joi.object({
   filename: Joi.string().required(),
   fileUrl: Joi.string().required()
 })
 
-export const plants = [
+export const addAnother = [
   {
     method: 'GET',
-    path: '/plants',
+    path: '/uploads/add-another/plants',
     handler: async (request, h) => {
       const plants = await getPlants(request.db)
 
@@ -20,7 +24,7 @@ export const plants = [
   },
   {
     method: 'POST',
-    path: '/plants',
+    path: '/uploads/add-another/plants',
     options: {
       validate: {
         payload: Joi.object({
@@ -38,7 +42,7 @@ export const plants = [
   },
   {
     method: 'GET',
-    path: '/plants/{plantId}',
+    path: '/uploads/add-another/plants/{plantId}',
     options: {
       validate: {
         params: Joi.object({
