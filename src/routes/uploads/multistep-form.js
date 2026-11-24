@@ -19,7 +19,7 @@ export const multistepForm = [
     handler: async (request, h) => {
       const animals = await getAnimals(request.db)
       await request.metrics.counter('animals-list')
-      return h.response({ message: 'success', animals }).code(200)
+      return h.response({ message: 'success', animals })
     }
   },
   {
@@ -38,7 +38,7 @@ export const multistepForm = [
     handler: async (request, h) => {
       const animal = await createAnimal(request.db, request.payload)
       await request.metrics.counter('animals-created')
-      return h.response({ message: 'success', animal }).code(200)
+      return h.response({ message: 'success', animal })
     }
   },
   {
@@ -58,7 +58,7 @@ export const multistepForm = [
         return Boom.boomify(Boom.notFound())
       }
 
-      return h.response({ message: 'success', animal }).code(200)
+      return h.response({ message: 'success', animal })
     }
   }
 ]

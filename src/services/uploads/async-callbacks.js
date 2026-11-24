@@ -1,5 +1,11 @@
 import { UUID } from 'mongodb'
 
+// Simulated processing rolls a 10-sided dice: 1-6 keeps processing,
+// 7-9 completes and 10 rejects the tracking
+const diceSides = 10
+const maxProcessingRoll = 6
+const maxCompleteRoll = 9
+
 export const trackingStatus = {
   ready: 'ready',
   readyforprocessing: 'readyforprocessing',
@@ -30,7 +36,7 @@ export async function createTracking(db, birdId, spotter) {
     updatedAt: new Date()
   })
 
-  return await db
+  return db
     .collection('birdtrackings')
     .findOne({ _id: result.insertedId }, { projection: { _id: 0 } })
 }
@@ -50,29 +56,29 @@ export async function findTrackings(db, birdId) {
     .collection('birdtrackings')
     .find({ birdId }, { projection: { _id: 0 } })
 
-  return await cursor.toArray()
+  return cursor.toArray()
 }
 
 export async function updateTrackingStatusUrl(db, trackingId, statusUrl) {
-  return await db
+  return db
     .collection('birdtrackings')
     .updateOne(
       { trackingId: new UUID(trackingId) },
-      { $set: { statusUrl, updatedAt: new Date().toISOString } }
+      { $set: { statusUrl, updatedAt: new Date() } }
     )
 }
 
-export async function updateTrackingStatus(db, trackingId, trackingStatus) {
-  return await db
+export async function updateTrackingStatus(db, trackingId, status) {
+  return db
     .collection('birdtrackings')
     .updateOne(
       { trackingId: new UUID(trackingId) },
-      { $set: { trackingStatus, updatedAt: new Date() } }
+      { $set: { trackingStatus: status, updatedAt: new Date() } }
     )
 }
 
 export async function updateTrackingFile(db, trackingId, fileDetails) {
-  return await db
+  return db
     .collection('birdtrackings')
     .updateOne(
       { trackingId: new UUID(trackingId) },
@@ -110,21 +116,21 @@ export async function simulateProcessing(request, tracking) {
       { tracking },
       `Unknown status: ${tracking.trackingStatus}`
     )
-    return
+    return tracking
   }
 
-  const dice = Math.ceil(Math.random() * 10)
-  if (dice <= 6) {
+  const dice = Math.ceil(Math.random() * diceSides)
+  if (dice <= maxProcessingRoll) {
     request.logger.debug({ tracking }, `Simulated processing continues`)
-  } else if (dice > 9) {
-    request.logger.info({ tracking }, `Simulated processing failed:`)
-    setTrackingRejected(request.db, tracking.trackingId)
-  } else if (dice > 6) {
+  } else if (dice <= maxCompleteRoll) {
     request.logger.info({ tracking }, `Simulated processing complete`)
-    setTrackingReady(request.db, tracking.trackingId)
+    await setTrackingReady(request.db, tracking.trackingId)
   } else {
-    request.logger.error(`Unknown dice roll ${dice}`)
+    request.logger.info({ tracking }, `Simulated processing failed`)
+    await setTrackingRejected(request.db, tracking.trackingId)
   }
+
+  return tracking
 }
 
 async function setTrackingReady(db, trackingId) {

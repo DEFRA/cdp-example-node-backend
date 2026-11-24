@@ -1,5 +1,5 @@
 export const health = {
   method: 'GET',
   path: '/health',
-  handler: (_request, h) => h.response({ message: 'success' }).code(200)
+  handler: (_request, h) => h.response({ message: 'success' })
 }

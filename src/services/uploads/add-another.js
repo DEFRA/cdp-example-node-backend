@@ -5,13 +5,13 @@ export async function createPlant(db, plant) {
     updatedAt: new Date()
   })
 
-  return await db
+  return db
     .collection('plants')
     .findOne({ _id: result.insertedId }, { projection: { _id: 0 } })
 }
 
 export async function getPlant(db, plantId) {
-  return await db
+  return db
     .collection('plants')
     .findOne({ plantId }, { projection: { _id: 0 } })
 }
@@ -19,5 +19,5 @@ export async function getPlant(db, plantId) {
 export async function getPlants(db) {
   const cursor = db.collection('plants').find({}, { projection: { _id: 0 } })
 
-  return await cursor.toArray()
+  return cursor.toArray()
 }

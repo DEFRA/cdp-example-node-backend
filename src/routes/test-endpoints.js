@@ -1,26 +1,26 @@
+import { createRequire } from 'node:module'
 import Joi from 'joi'
+
+import { statusCodes } from '#/common/constants/status-codes.js'
+
+const exampleJson = createRequire(import.meta.url)(
+  './test-endpoints-example.json'
+)
+
+const minStatusCode = 100
+const maxStatusCode = 599
 
 // Test endpoints, see test-endpoints.md
 export const testEndpoints = [
   {
     method: ['*'],
     path: '/api/ok',
-    handler: (_request, h) => h.response('ok').code(200)
+    handler: (_request, h) => h.response('ok')
   },
   {
     method: ['GET'],
     path: '/api/json',
-    handler: (_request, h) =>
-      h
-        .response({
-          key: '123',
-          value: 'abc',
-          bool: true,
-          number: 42,
-          array: [1, 2, 3],
-          obj: { foo: 'bar' }
-        })
-        .code(200)
+    handler: (_request, h) => h.response(exampleJson)
   },
   {
     method: ['POST', 'PUT', 'PATCH'],
@@ -33,7 +33,7 @@ export const testEndpoints = [
         payload: Joi.object({}).unknown(true)
       }
     },
-    handler: (request, h) => h.response(request.payload).code(200)
+    handler: (request, h) => h.response(request.payload)
   },
   {
     method: ['POST', 'PUT', 'PATCH'],
@@ -49,14 +49,13 @@ export const testEndpoints = [
     },
     handler: (request, h) => {
       const keys = Object.keys(request.payload).join(', ')
-      return h.response(`multipart accepted with keys ${keys}`).code(200)
+      return h.response(`multipart accepted with keys ${keys}`)
     }
   },
   {
     method: ['*'],
     path: '/api/long-path/{path*}',
-    handler: (request, h) =>
-      h.response({ requestedPath: request.params.path }).code(200)
+    handler: (request, h) => h.response({ requestedPath: request.params.path })
   },
   {
     method: ['*'],
@@ -64,7 +63,6 @@ export const testEndpoints = [
     handler: (_request, h) =>
       h
         .response('ok')
-        .code(200)
         .header('x-custom-header', 'test123')
         .header('X-SOME-VALUE', 'SomeValue')
   },
@@ -74,7 +72,11 @@ export const testEndpoints = [
     options: {
       validate: {
         params: Joi.object({
-          code: Joi.number().integer().min(100).max(599).required()
+          code: Joi.number()
+            .integer()
+            .min(minStatusCode)
+            .max(maxStatusCode)
+            .required()
         })
       }
     },
@@ -88,7 +90,8 @@ export const testEndpoints = [
         'Headers: ' + JSON.stringify(request.headers, null, 2)
       )
       request.logger.info('Body: ' + request.payload)
-      return h.response(request.payload).code(200)
+      // Explicit: hapi would default to 204 for an empty payload
+      return h.response(request.payload).code(statusCodes.ok)
     }
   }
 ]

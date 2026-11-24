@@ -8,13 +8,13 @@ export async function createAnimal(db, animal) {
     updatedAt: new Date()
   })
 
-  return await db
+  return db
     .collection('animals')
     .findOne({ _id: result.insertedId }, { projection: { _id: 0 } })
 }
 
 export async function getAnimal(db, animalId) {
-  return await db
+  return db
     .collection('animals')
     .findOne({ animalId: new ObjectId(animalId) }, { projection: { _id: 0 } })
 }
@@ -22,5 +22,5 @@ export async function getAnimal(db, animalId) {
 export async function getAnimals(db) {
   const cursor = db.collection('animals').find({}, { projection: { _id: 0 } })
 
-  return await cursor.toArray()
+  return cursor.toArray()
 }

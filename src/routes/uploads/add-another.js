@@ -19,7 +19,7 @@ export const addAnother = [
     handler: async (request, h) => {
       const plants = await getPlants(request.db)
 
-      return h.response({ message: 'success', plants }).code(200)
+      return h.response({ message: 'success', plants })
     }
   },
   {
@@ -37,7 +37,7 @@ export const addAnother = [
     handler: async (request, h) => {
       const plant = await createPlant(request.db, request.payload)
 
-      return h.response({ message: 'success', plant }).code(200)
+      return h.response({ message: 'success', plant })
     }
   },
   {
@@ -57,7 +57,7 @@ export const addAnother = [
         return Boom.boomify(Boom.notFound())
       }
 
-      return h.response({ message: 'success', plant }).code(200)
+      return h.response({ message: 'success', plant })
     }
   }
 ]

@@ -2,8 +2,7 @@ import { health } from './health.js'
 
 describe('#health', () => {
   const mockViewHandler = {
-    response: vi.fn().mockReturnThis(),
-    code: vi.fn().mockReturnThis()
+    response: vi.fn().mockReturnThis()
   }
 
   test('Should provide expected response', () => {
@@ -12,6 +11,5 @@ describe('#health', () => {
     expect(mockViewHandler.response).toHaveBeenCalledWith({
       message: 'success'
     })
-    expect(mockViewHandler.code).toHaveBeenCalledWith(200)
   })
 })

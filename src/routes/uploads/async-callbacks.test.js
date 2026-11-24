@@ -67,6 +67,37 @@ describe('#asyncCallbacks routes', () => {
     )
   })
 
+  test('Should save the status url on a tracking', async () => {
+    const created = await server.inject({
+      method: 'POST',
+      url: '/uploads/async-callbacks/birds/3/tracking',
+      payload: { spotter: 'Cat' }
+    })
+    const trackingId = created.result.tracking.trackingId.toHexString(true)
+
+    const response = await server.inject({
+      method: 'POST',
+      url: `/uploads/async-callbacks/birds/3/tracking/${trackingId}/status-url`,
+      payload: { statusUrl: 'http://uploader/status/1' }
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.result.tracking).toMatchObject({
+      birdId: 3,
+      spotter: 'Cat'
+    })
+  })
+
+  test('Should return 404 when saving the status url of an unknown tracking', async () => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/uploads/async-callbacks/birds/3/tracking/3a7e15b1-3fb7-4e53-8ece-8eb96c7b6f61/status-url',
+      payload: { statusUrl: 'http://uploader/status/1' }
+    })
+
+    expect(response.statusCode).toBe(404)
+  })
+
   test('Should return 404 for unknown tracking', async () => {
     const response = await server.inject({
       method: 'GET',

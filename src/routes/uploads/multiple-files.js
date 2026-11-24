@@ -21,7 +21,7 @@ export const multipleFiles = [
     handler: async (request, h) => {
       const creatures = await getCreatures(request.db)
 
-      return h.response({ message: 'success', creatures }).code(200)
+      return h.response({ message: 'success', creatures })
     }
   },
   {
@@ -52,7 +52,7 @@ export const multipleFiles = [
     handler: async (request, h) => {
       const creature = await createCreature(request.db, request.payload)
 
-      return h.response({ message: 'success', creature }).code(200)
+      return h.response({ message: 'success', creature })
     }
   },
   {
@@ -72,7 +72,7 @@ export const multipleFiles = [
         return Boom.boomify(Boom.notFound())
       }
 
-      return h.response({ message: 'success', creature }).code(200)
+      return h.response({ message: 'success', creature })
     }
   },
   {
@@ -81,7 +81,7 @@ export const multipleFiles = [
     options: {
       validate: {
         params: Joi.object({
-          creatureId: Joi.string().required()
+          creatureId: Joi.string().uuid().required()
         })
       }
     },
@@ -95,7 +95,7 @@ export const multipleFiles = [
         return Boom.boomify(Boom.notFound())
       }
 
-      return h.response({ message: 'success', creature }).code(200)
+      return h.response({ message: 'success', creature })
     }
   }
 ]

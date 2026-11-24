@@ -56,6 +56,41 @@ describe('#multipleFiles routes', () => {
     expect(response.statusCode).toBe(404)
   })
 
+  test('Should delete a creature', async () => {
+    const creatureId = randomUUID()
+    await server.inject({
+      method: 'POST',
+      url: '/uploads/multiple-files/creatures',
+      payload: {
+        creatureId,
+        name: 'Bigfoot',
+        kind: 'ape',
+        date: '2024-01-01',
+        realLifeSighting: false
+      }
+    })
+    const url = `/uploads/multiple-files/creatures/${creatureId}`
+
+    const deleted = await server.inject({ method: 'DELETE', url })
+    expect(deleted.statusCode).toBe(200)
+    expect(deleted.result.creature).toMatchObject({ name: 'Bigfoot' })
+
+    const found = await server.inject({ method: 'GET', url })
+    expect(found.statusCode).toBe(404)
+
+    const deletedAgain = await server.inject({ method: 'DELETE', url })
+    expect(deletedAgain.statusCode).toBe(404)
+  })
+
+  test('Should reject delete with an invalid creature id', async () => {
+    const response = await server.inject({
+      method: 'DELETE',
+      url: '/uploads/multiple-files/creatures/not-a-uuid'
+    })
+
+    expect(response.statusCode).toBe(400)
+  })
+
   test.each(['/uploads/multiple-files/creatures', '/creatures'])(
     'Should list creatures on %s',
     async (url) => {

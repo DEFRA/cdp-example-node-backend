@@ -1,6 +1,8 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
+import { statusCodes } from '#/common/constants/status-codes.js'
+
 import {
   createTracking,
   fileStatus,
@@ -42,7 +44,7 @@ export const asyncCallbacks = [
         )
         return h
           .response({ message: 'Could not find tracking callback' })
-          .code(404)
+          .code(statusCodes.notFound)
       }
 
       const payload = request.payload
@@ -59,7 +61,9 @@ export const asyncCallbacks = [
 
       if (uploadedStatus !== uploadStatus.ready) {
         request.logger.warn({ trackingId }, `Unknown status: ${uploadedStatus}`)
-        return h.response({ message: 'Unknown upload status' }).code(204)
+        return h
+          .response({ message: 'Unknown upload status' })
+          .code(statusCodes.noContent)
       }
 
       if (file?.fileStatus === fileStatus.complete) {
@@ -81,7 +85,9 @@ export const asyncCallbacks = [
         )
 
         if (!updateFileResponse) {
-          return h.response({ message: 'error' }).code(500)
+          return h
+            .response({ message: 'error' })
+            .code(statusCodes.internalServerError)
         }
       } else {
         request.logger.warn(
@@ -97,7 +103,9 @@ export const asyncCallbacks = [
         tracking.trackingStatus
       )
       if (!updateStatusResponse) {
-        return h.response({ message: 'error' }).code(500)
+        return h
+          .response({ message: 'error' })
+          .code(statusCodes.internalServerError)
       }
 
       request.logger.info(
@@ -105,7 +113,7 @@ export const asyncCallbacks = [
         'Tracking callback updated successfully'
       )
 
-      return h.response().code(204)
+      return h.response().code(statusCodes.noContent)
     }
   },
   {
@@ -126,7 +134,7 @@ export const asyncCallbacks = [
       const birdId = request.params.birdId
       const trackingId = request.params.trackingId
       const statusUrl = request.payload.statusUrl
-      const tracking = await findTracking(request.db, birdId, trackingId)
+      const { tracking } = await findTracking(request.db, birdId, trackingId)
 
       if (tracking === null) {
         return Boom.boomify(Boom.notFound())
@@ -134,7 +142,7 @@ export const asyncCallbacks = [
 
       await updateTrackingStatusUrl(request.db, trackingId, statusUrl)
 
-      return h.response({ message: 'success', tracking }).code(200)
+      return h.response({ message: 'success', tracking })
     }
   },
   {
@@ -152,14 +160,16 @@ export const asyncCallbacks = [
       const birdId = request.params.birdId
       const trackingId = request.params.trackingId
 
-      let { tracking } = await findTracking(request.db, birdId, trackingId)
+      const { tracking } = await findTracking(request.db, birdId, trackingId)
 
       if (tracking === null || !tracking?.trackingId) {
         request.logger.info(
           { birdId, trackingId, tracking },
           `Could not find tracking [${trackingId}]`
         )
-        return h.response({ message: `Could not find tracking` }).code(404)
+        return h
+          .response({ message: `Could not find tracking` })
+          .code(statusCodes.notFound)
       }
 
       request.logger.debug(
@@ -168,9 +178,10 @@ export const asyncCallbacks = [
       )
 
       await simulateProcessing(request, tracking)
-      tracking = await findTracking(request.db, birdId, trackingId)
+      const updated = await findTracking(request.db, birdId, trackingId)
 
-      return h.response({ tracking }).code(200)
+      // Wrapped twice ({ tracking: { tracking } }): the frontend reads it that way
+      return h.response({ tracking: updated })
     }
   },
   {
@@ -198,7 +209,7 @@ export const asyncCallbacks = [
         return Boom.boomify(Boom.notFound())
       }
 
-      return h.response({ tracking }).code(200)
+      return h.response({ tracking })
     }
   },
   {
@@ -213,7 +224,7 @@ export const asyncCallbacks = [
       const birdId = request.params.birdId
       const trackings = await findTrackings(request.db, birdId)
 
-      return h.response({ trackings }).code(200)
+      return h.response({ trackings })
     }
   }
 ]
