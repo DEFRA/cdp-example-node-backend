@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+concurrency:
+  group: $${{ github.workflow }}
+  cancel-in-progress: false
+  queue: max
+
 permissions:
   id-token: write
   contents: write
@@ -12,7 +17,7 @@ permissions:
 
 env:
   AWS_REGION: eu-west-2
-  AWS_ACCOUNT_ID: "094954420758"
+  AWS_ACCOUNT_ID: '094954420758'
 
 jobs:
   build:
@@ -21,8 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
+      - name: Test code and Create Test Coverage Reports
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
       - run: |
           npm ci
           npm run format:check

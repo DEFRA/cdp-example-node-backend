@@ -1,6 +1,7 @@
 node_modules
 Dockerfile
-mock-api
+coverage
+**/*.test.js
 sonar-project.properties
 .github
 .vscode
