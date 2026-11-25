@@ -1,0 +1,8 @@
+{
+  "key": "123",
+  "value": "abc",
+  "bool": true,
+  "number": 42,
+  "array": [1, 2, 3],
+  "obj": { "foo": "bar" }
+}

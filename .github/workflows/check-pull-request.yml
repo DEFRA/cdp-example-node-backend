@@ -16,15 +16,29 @@ jobs:
     name: Run Pull Request Checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Test code and Create Test Coverage Reports
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm ci
-      - run: npm run format:check
-      - run: npm run lint
-      - run: npm test
+
+      - name: Security audit
+        run: npm run security-audit
+
+      - run: |
+          npm ci
+          npm run format:check
+          npm run lint
+          npm test
+
+      - name: Test Docker Image Build
+        run: |
+          set +e
+          docker build --no-cache --tag cdp-example-node-backend .
+          exit $?
 
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
